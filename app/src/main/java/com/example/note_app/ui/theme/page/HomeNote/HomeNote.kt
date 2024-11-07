@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 
 import androidx.compose.material.icons.rounded.Info
@@ -194,7 +195,7 @@ fun NoteCard(note: Note, navController: NavHostController, viewModel: HomeNoteVi
     {
         if(isPressed)
         {
-            Column(modifier = Modifier.fillMaxSize())
+            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically)
             {
                     IconButton(
                         onClick = {
@@ -205,10 +206,23 @@ fun NoteCard(note: Note, navController: NavHostController, viewModel: HomeNoteVi
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = Color.Red,
+                            tint = Color.Green,
                             modifier = Modifier.size(height = 50.dp, width = 50.dp)
                         )
                     }
+                IconButton(
+                    onClick = {
+                        isPressed = false
+
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Delete",
+                        tint = Color.Red,
+                        modifier = Modifier.size(height = 50.dp, width = 50.dp)
+                    )
+                }
 
             }
 
