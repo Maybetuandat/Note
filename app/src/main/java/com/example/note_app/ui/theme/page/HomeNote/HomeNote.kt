@@ -3,6 +3,7 @@ package com.example.note_app.ui.theme.page.HomeNote
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Search
@@ -40,12 +42,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -78,7 +84,7 @@ fun HomeNote(navController: NavHostController) {
                 .weight(1f)
                 .padding(start = 20.dp)
         ) {
-            TopAppBar()
+            TopAppBar(navController)
         }
         Box(
             modifier = Modifier
@@ -134,7 +140,7 @@ fun MainHomeNote(viewModel: HomeNoteViewModel , navController: NavHostController
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (noteList == null) {
+        if (noteList.isEmpty()) {
             Image(
                 painter = painterResource(id = R.drawable.notes), // Thay thế bằng hình minh họa phù hợp
                 contentDescription = null, modifier = Modifier.size(300.dp) // Kích thước hình ảnh
@@ -152,7 +158,7 @@ fun MainHomeNote(viewModel: HomeNoteViewModel , navController: NavHostController
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(noteList) { note ->
-                    NoteCard(note, navController)
+                    NoteCard(note, navController, viewModel)
 
                 }
             }
@@ -163,44 +169,74 @@ fun MainHomeNote(viewModel: HomeNoteViewModel , navController: NavHostController
 }
 
 @Composable
-fun NoteCard(note: Note, navController: NavHostController) {
-//    val brush = Brush.linearGradient(
-//        colors = listOf(Color.White, endColorCard),
-//        start = Offset(0f, 0f),
-//        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-//    )
+fun NoteCard(note: Note, navController: NavHostController, viewModel: HomeNoteViewModel) {
+    var isPressed by remember {
+        mutableStateOf(false)
+    }
     Card(
         modifier = Modifier
             .height(150.dp)
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .padding(bottom = 20.dp),
+            .padding(bottom = 20.dp)
+            .pointerInput(Unit){
+                detectTapGestures(
+                    onLongPress = {
+                        isPressed = true
+                    },
+                    onTap = {
+                        navController.navigate("detail/${note.id}")
+                    }
+                )
+            },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        onClick = {
-            navController.navigate("detail/${note.id}")
-        }
-
         )
     {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(endColorCard),
-            contentAlignment = Alignment.Center
-        )
+        if(isPressed)
         {
-            Text(
-                text = note.title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.sp,
-                color = Color.Black
-            )
+            Column(modifier = Modifier.fillMaxSize())
+            {
+                    IconButton(
+                        onClick = {
+                            isPressed = false
+                            viewModel.deleteNote(note)
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = Color.Red,
+                            modifier = Modifier.size(height = 50.dp, width = 50.dp)
+                        )
+                    }
+
+            }
+
         }
+        else
+        {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(endColorCard),
+                contentAlignment = Alignment.Center
+            )
+            {
+                Text(
+                    text = note.title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = Color.Black
+                )
+
+            }
+        }
+
     }
 }
 
 @Composable
-fun TopAppBar() {
+fun TopAppBar(navController: NavHostController) {
     Row(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier.fillMaxHeight(),
@@ -243,7 +279,8 @@ fun TopAppBar() {
                 .align(alignment = Alignment.CenterVertically),
             colors = CardDefaults.cardColors(itemCardColor),
             elevation = CardDefaults.elevatedCardElevation(20.dp),
-            shape = RoundedCornerShape(10.dp)
+            shape = RoundedCornerShape(10.dp),
+            onClick = {navController.navigate(NavItem.About.route)}
         ) {
             Box(
                 contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()

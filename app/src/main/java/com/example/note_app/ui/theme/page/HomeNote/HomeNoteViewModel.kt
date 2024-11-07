@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,4 +20,10 @@ class HomeNoteViewModel @Inject constructor(private val repository: NoteReposito
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+     fun deleteNote(note : Note)
+    {
+        viewModelScope.launch {
+            repository.deleteNote(note)
+        }
+    }
 }
