@@ -195,7 +195,10 @@ fun NoteCard(note: Note, navController: NavHostController, viewModel: HomeNoteVi
     {
         if(isPressed)
         {
-            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically)
+            Row(
+                modifier = Modifier.fillMaxSize().background(backGroundColor),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically)
             {
                     IconButton(
                         onClick = {
@@ -206,7 +209,7 @@ fun NoteCard(note: Note, navController: NavHostController, viewModel: HomeNoteVi
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = "Delete",
-                            tint = Color.Green,
+                            tint = Color.Red,
                             modifier = Modifier.size(height = 50.dp, width = 50.dp)
                         )
                     }
@@ -219,7 +222,7 @@ fun NoteCard(note: Note, navController: NavHostController, viewModel: HomeNoteVi
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Delete",
-                        tint = Color.Red,
+                        tint = Color.Green,
                         modifier = Modifier.size(height = 50.dp, width = 50.dp)
                     )
                 }
